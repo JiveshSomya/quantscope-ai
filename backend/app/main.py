@@ -1,27 +1,17 @@
 from fastapi import FastAPI
 
+from app.auth.router import router as auth_router
 from app.database.database import Base, engine
 
-# Import ALL models here
-from app.models.user import User
+import app.models.user
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(
-    title="QuantScope AI",
-    version="1.0.0",
-)
+app = FastAPI(title="QuantScope AI")
+
+app.include_router(auth_router)
 
 
 @app.get("/")
 def root():
-    return {
-        "message": "QuantScope AI 🚀"
-    }
-
-
-@app.get("/health")
-def health():
-    return {
-        "status": "healthy"
-    }
+    return {"message": "QuantScope AI 🚀"}

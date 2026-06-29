@@ -5,12 +5,9 @@ from app.database.database import Base
 
 
 class User(Base):
-
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(
-        primary_key=True
-    )
+    id: Mapped[int] = mapped_column(primary_key=True)
 
     username: Mapped[str] = mapped_column(
         String(50),
@@ -19,7 +16,7 @@ class User(Base):
     )
 
     email: Mapped[str] = mapped_column(
-        String(100),
+        String(255),
         unique=True,
         nullable=False,
     )
