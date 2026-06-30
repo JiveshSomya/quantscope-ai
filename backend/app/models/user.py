@@ -1,10 +1,15 @@
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import relationship
 
 from app.database.database import Base
 
 
 class User(Base):
+    portfolio = relationship(
+    "Portfolio",
+    back_populates="user"
+)
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)

@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, UTC
 
 from jose import jwt
+from jose import JWTError
 from passlib.context import CryptContext
 
 SECRET_KEY = "change-this-in-production"
@@ -28,3 +29,17 @@ def create_access_token(data: dict):
     )
 
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+def decode_access_token(token: str):
+
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM],
+        )
+
+        return payload
+
+    except JWTError:
+        return None
