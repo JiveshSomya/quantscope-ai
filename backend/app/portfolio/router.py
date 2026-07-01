@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from app.portfolio.service import portfolio_summary
 
 from app.auth.dependencies import get_current_user
 from app.database.database import get_db
@@ -125,3 +126,13 @@ def remove_stock(
     return {
         "message": "Deleted Successfully"
     }
+    
+    
+@router.get("/summary")
+
+def summary(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    ):
+
+    return portfolio_summary(db,current_user.id,)
