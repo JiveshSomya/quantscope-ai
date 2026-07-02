@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.portfolio.service import portfolio_summary
-
+from app.clients.rust_engine import analyze_portfolio
+from app.portfolio.service import build_rust_payload
+from app.clients.rust_engine import analyze_portfolio
 from app.auth.dependencies import get_current_user
 from app.database.database import get_db
 from app.models.user import User
@@ -136,3 +138,43 @@ def summary(
     ):
 
     return portfolio_summary(db,current_user.id,)
+
+@router.get("/analysis")
+async def portfolio_analysis():
+
+    payload = {
+        "holdings": [
+            {
+                "ticker": "AAPL",
+                "shares": 10,
+                "buy_price": 210,
+                "current_price": 216,
+            }
+        ]
+    }
+
+    return await analyze_portfolio(payload)
+
+@router.get("/analysis")
+async def portfolio_analysis(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+
+    summary = portfolio_summary(
+        db,
+        current_user.id,
+    )
+
+    payload = build_rust_payload(
+        summary["portfolio"]
+    )
+
+    analysis = await analyze_portfolio(
+        payload
+    )
+
+    return {
+        "portfolio": summary,
+        "analysis": analysis,
+    }

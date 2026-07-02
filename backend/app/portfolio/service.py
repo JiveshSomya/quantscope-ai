@@ -102,26 +102,64 @@ def portfolio_summary(
 
         current_price = market["price"]
 
-        current_value = current_price * stock.quantity
-
         invested = stock.buy_price * stock.quantity
 
+        current_value = current_price * stock.quantity
         profit = current_value - invested
+
+        profit_percent = (
+         (profit / invested) * 100
+         if invested > 0
+         else 0
+        )
 
         total_value += current_value
         total_profit += profit
 
-        summary.append({
-            "ticker": stock.ticker,
-            "shares": stock.quantity,
-            "buy_price": stock.buy_price,
-            "current_price": current_price,
-            "current_value": round(current_value, 2),
-            "profit": round(profit, 2)
+        summary.append(
+    {
+        "ticker": stock.ticker,
+
+        "shares": stock.quantity,
+
+        "buy_price": stock.buy_price,
+
+        "current_price": round(current_price, 2),
+
+        "invested": round(invested, 2),
+
+        "current_value": round(current_value, 2),
+
+        "profit": round(profit, 2),
+
+        "profit_percent": round(profit_percent, 2),
+    }
+)
+        
+    def build_rust_payload(summary):
+
+        holdings = []
+
+        for stock in summary:
+
+         holdings.append({
+            "ticker": stock["ticker"],
+            "shares": stock["shares"],
+            "buy_price": stock["buy_price"],
+            "current_price": stock["current_price"],
         })
 
+         return {
+         "holdings": holdings
+        }
+
     return {
-        "portfolio": summary,
-        "total_value": round(total_value,2),
-        "total_profit": round(total_profit,2)
-    }
+
+    "holdings": len(summary),
+
+    "portfolio": summary,
+
+    "total_value": round(total_value,2),
+
+    "total_profit": round(total_profit,2),
+}
